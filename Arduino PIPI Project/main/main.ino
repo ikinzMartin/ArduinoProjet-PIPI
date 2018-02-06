@@ -9,5 +9,4 @@ void loop() {
   printData();
   listenForEthernatClients();
   delay(1000);
-
 }
