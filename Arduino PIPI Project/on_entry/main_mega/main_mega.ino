@@ -1,12 +1,9 @@
+#include <Sig_handler.h>
+#include <signals.h>
+
 #include "main_mega.h"
 
-#include <SPI.h>
-#include <nRF24L01.h>
-#include <RF24.h>
-
-RF24 radio(28, 30);
-
-const byte address[2][6] = {"00001", "00010"};
+Sig_handler handler(28, 30);
 
 void setup() {
   Serial.begin(9600);
@@ -16,43 +13,35 @@ void setup() {
   pinMode(RELAY2, OUTPUT);
   pinMode(RELAY3, OUTPUT);
   pinMode(RELAY4, OUTPUT);
-  
+
   relay_off(RELAY1);
   relay_off(RELAY2);
   relay_off(RELAY3);
   relay_off(RELAY4);
 
-  // setup for NRF
-  radio.begin();
-  //radio.openWritingPipe(address[1]);
-  radio.openReadingPipe(1, address[0]);
-  radio.setPALevel(RF24_PA_MIN);
-  radio.startListening();
+  // setup for the handler
+  handler.init_handler(1, 0);
 }
 
 void loop() {
   delay(5);
-  //send_sig(400);
-    Serial.println("ok2");
-  if (radio.available()) {
-    int sig = 399;
-    radio.read(&sig, sizeof(sig));
-    Serial.println("ok");
+  if (handler.is_available()) {
     delay(5);
 
-    switch(sig) {
-      case MVT_CAPT:
+    switch(handler.read_sig()) {
+      case MOTION_CAPTURED_SIGNAL:
         Serial.println("j'ai capté un mouvement");
-        send_sig(DO_IDENTIFY);
+        handler.send_sig(DO_IDENTIFYING_SIGNAL);
         break;
-      case DO_IDENTIFY:
+      case DO_IDENTIFYING_SIGNAL:
         Serial.println("Authentifie le mouvement");
         break;
-      case MVT_IDENTIFYED:
+      case MOTION_IDENTIFIED_SIGNAL:
         Serial.println("Mouvement authentifié");
         relay_on(RELAY1);
         break;
-      default:;
+      default:
+        handler.send_sig(NULL_SIGNAL);
     }
   }
 }
@@ -71,4 +60,3 @@ void relay_on(int relay) {
 void relay_off(int relay) {
   digitalWrite(relay, HIGH);
 }
-

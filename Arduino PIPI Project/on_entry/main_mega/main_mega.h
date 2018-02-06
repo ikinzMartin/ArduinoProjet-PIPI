@@ -9,11 +9,4 @@
 void relay_on(int relay);
 void relay_off(int relay);
 
-
-#define MVT_CAPT 400
-#define DO_IDENTIFY 401
-#define MVT_IDENTIFYED 402
-
-void send_sig(int sig);
-
 #endif
