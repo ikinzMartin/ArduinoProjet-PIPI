@@ -8,4 +8,6 @@
 #define DO_IDENTIFYING_SIGNAL 401
 #define MOTION_IDENTIFIED_SIGNAL 402
 
+typedef unsigned int signal;
+
 #endif

@@ -1,5 +1,4 @@
 #include <Sig_handler.h>
-#include <signals.h>
 
 #include "main_mega.h"
 
@@ -41,16 +40,9 @@ void loop() {
         relay_on(RELAY1);
         break;
       default:
-        handler.send_sig(NULL_SIGNAL);
+        ;
     }
   }
-}
-
-void send_sig(int sig) {
-  //radio.stopListening();
-  Serial.println("ok");
-  //while(!radio.write(&sig, sizeof(sig))) delay(70);
-  //radio.startListening();
 }
 
 void relay_on(int relay) {
