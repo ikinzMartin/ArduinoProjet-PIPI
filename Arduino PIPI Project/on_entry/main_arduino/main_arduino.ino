@@ -1,11 +1,10 @@
 #include <nRF24L01.h>
-#include <printf.h>
 #include <RF24.h>
 #include <RF24_config.h>
 
 #define pirPin 5  //Pin atatched to PIR pin
-RF24 radio(7,8); //ce,csn
-const byte addresses[][6] = {"00001","00010"};
+RF24 radio(8,9); //ce,csn
+const byte addresses[][6] = {"0Node","1Node"};
 int msg;
 int a = 400;
 int b = 402;
@@ -17,11 +16,9 @@ void setup()
   pinMode(pirPin, INPUT);
   radio.begin();
   radio.openWritingPipe(addresses[1]);
-  radio.openReadingPipe(0,addresses[0]);
-  radio.setPALevel(RF24_PA_MIN);
-  //radio.startListening();
-  //radio.stopListening();
-
+  radio.openReadingPipe(1,addresses[0]);
+//  radio.setPALevel(RF24_PA_MIN);
+  radio.startListening();
 }
 
 void loop() {
@@ -29,12 +26,10 @@ void loop() {
 //  if (pirVal){
 //    Serial.print("movement");
 //    detectedMovement();
-//    }
-  
-  if (!radio.write(&a, sizeof(a))){
-    Serial.println("AAA");}
-  Serial.println("BBB");
-  radio.write(&b, sizeof(b));
+//  }
+  delay(1000);
+  detectedMovement();
+  while(true);
 }
 
 //Reads the value given by the Human Body Infrared sensor(PIR) and returns the read value
@@ -47,17 +42,11 @@ float readPIR()
 void sendMessage(int msg)
 {
   radio.stopListening();
-  int res = 0;
-  while (!res)
-  {
-    if (radio.write(&a, sizeof(a))){
-      res = 1;
-      Serial.println("Message sent");}
-    delay(100);
-    };
-  Serial.print("movement alert sent");
+  Serial.println("Message sent");
+  while (!radio.write(&msg, sizeof(msg))) {}
+  Serial.println("Acknowledged");
   radio.startListening();
-  }
+}
 
 int recieveMessage()
 {
@@ -71,7 +60,7 @@ void detectedMovement()
 {
   sendMessage(400);
   int next = recieveMessage();
-  if (next==400){
+  if (next==401){
     Serial.print("Please identify yourself.");}
   else{
     Serial.print("Movement is unimportant");}

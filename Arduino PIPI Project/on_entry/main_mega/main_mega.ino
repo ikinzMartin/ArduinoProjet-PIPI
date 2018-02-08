@@ -19,14 +19,14 @@ void setup() {
   relay_off(RELAY4);
 
   // setup for the handler
-  handler.init_handler(1, 0);
+  handler.init_handler(0, 1);
 }
 
 void loop() {
   delay(5);
   if (handler.is_available()) {
     delay(5);
-
+    Serial.println("Message recieved");
     switch(handler.read_sig()) {
       case MOTION_CAPTURED_SIGNAL:
         Serial.println("j'ai capté un mouvement");
